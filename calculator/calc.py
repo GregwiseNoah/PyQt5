@@ -51,14 +51,20 @@ class PyCalcWindow(QMainWindow):
         self.generalLayout.addLayout(buttonsLayout)
 
     def setDisplayText(self, text):
+<<<<<<< Updated upstream
         self,display.setText(text)
         self.display.setFcous()
+=======
+        self.display.setText(text)
+        self.display.setFocus()
+>>>>>>> Stashed changes
     
     def displayText(self):
         return self.display.text()
     def clearDisplay(self):
         self.setDisplayText("")
 
+<<<<<<< Updated upstream
 def evaluateExpressin(expression):
     try:
         result = str(ne.evaluate(expression, {}, {}))
@@ -88,6 +94,8 @@ class PyCalc:
         
 
 
+=======
+>>>>>>> Stashed changes
 def main():
     pycalcapp = QApplication([])
     pycalcwindow = PyCalcWindow()
