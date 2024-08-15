@@ -1,3 +1,4 @@
+import numexpr as ne
 import sys
 from PyQt5.QtWidgets import (
                     QApplication, QMainWindow, QWidget,
@@ -5,10 +6,13 @@ from PyQt5.QtWidgets import (
                     QVBoxLayout
                     )
 from PyQt5.QtCore import Qt
+from functools import partial
 
 Window_size = 235
 display_height = 35
 button_size = 40
+
+error_message = "Error"
 
 class PyCalcWindow(QMainWindow):
     def __init__(self):
@@ -45,6 +49,44 @@ class PyCalcWindow(QMainWindow):
                 self.buttonMap[key].setFixedSize(button_size, button_size)
                 buttonsLayout.addWidget(self.buttonMap[key], row, col)
         self.generalLayout.addLayout(buttonsLayout)
+
+    def setDisplayText(self, text):
+        self,display.setText(text)
+        self.display.setFcous()
+    
+    def displayText(self):
+        return self.display.text()
+    def clearDisplay(self):
+        self.setDisplayText("")
+
+def evaluateExpressin(expression):
+    try:
+        result = str(ne.evaluate(expression, {}, {}))
+    except Exception:
+        result = error_message
+    return result
+
+
+class PyCalc:
+    def __init__(self, model, view):
+        self._evaluate = model
+        self._view = view
+        self._connectSignalsAndSlots()
+
+    def _calculateResult(self):
+        result = self._evaluate(expression = self._view.displayText())
+        self._view.setDisplayText(result)
+    
+    def _buildExpression(self, subExpression):
+        if self._view.displayText() == error_message:
+            self._view.clearDisplay()
+        expression = self._view.displayText() + subExpression
+        self._view.setDisplayText(expression)
+    
+    def _connectSignalAndSlots(self):
+        for keySymbol, button in self._view.buttonMap.items()
+        
+
 
 def main():
     pycalcapp = QApplication([])
