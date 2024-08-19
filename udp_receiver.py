@@ -40,7 +40,7 @@ class UDPWidget(QtWidgets.QWidget):
         lay.addWidget(btn)
         lay.addWidget(self.lst)
 
-        self.setWindowTitle("udp receive")
+        self.setWindowTitle("udp receiver")
 
     @QtCore.pyqtSlot(str)
     def addItem(self, text):
