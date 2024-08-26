@@ -19,13 +19,13 @@ class Color(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
-class MainWindow(QMainWindow):
+class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle("work in progress")
 
-        #main_layout = QGridLayout(self)
-        #self.setLayout(main_layout)
+        main_layout = QGridLayout(self)
+        self.setLayout(main_layout)
 
         tab = QTabWidget(self)
         self.base(tab)
@@ -33,6 +33,10 @@ class MainWindow(QMainWindow):
         # widget = QWidget()
         # widget.setLayout(layout)
         # self.setCentralWidget(widget)
+
+        main_layout.addWidget(tab, 0, 0, 2, 1)
+
+
     def base(self, tab):
         #base visualizations
         base = QWidget(self)
@@ -44,8 +48,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(Color('blue'), 1, 1)
         layout.addWidget(Color('blue'), 2, 1)
         layout.addWidget(Color('purple'), 3, 1)
-
-        tab.addTab(base, "Base visualizations")
+        tab.addTab(base, "Base")
 
     def fft(self, tab):
         #fft
@@ -56,9 +59,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(Color('green'), 1, 0)
 
         
-        tab.addTab(fft, "FFT visualizations")
-
-
+        tab.addTab(fft, "FFT")
 
 
     # self.fwd_i = pg.PlotWidget()
