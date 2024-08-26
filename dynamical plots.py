@@ -1,3 +1,5 @@
+#Can't run this on the pc because i haven't been able to install pyqtgraph for some reason
+
 from random import randint
 
 import pyqtgraph as pg
