@@ -12,15 +12,15 @@ class MainWindow(QtWidgets.QMainWindow):
         # Temperature vs time dynamic plot
         self.plot_graph = pg.PlotWidget()
         self.setCentralWidget(self.plot_graph)
-        self.plot_graph.setBackground("w")
+        # self.plot_graph.setBackground("w")
         pen = pg.mkPen(color=(255, 0, 0))
-        self.plot_graph.setTitle("Temperature vs Time", color="b", size="20pt")
-        styles = {"color": "red", "font-size": "18px"}
-        self.plot_graph.setLabel("left", "Temperature (°C)", **styles)
-        self.plot_graph.setLabel("bottom", "Time (min)", **styles)
-        self.plot_graph.addLegend()
-        self.plot_graph.showGrid(x=True, y=True)
-        self.plot_graph.setYRange(20, 40)
+        # self.plot_graph.setTitle("Temperature vs Time", color="b", size="20pt")
+        # styles = {"color": "red", "font-size": "18px"}
+        # self.plot_graph.setLabel("left", "Temperature (°C)", **styles)
+        # self.plot_graph.setLabel("bottom", "Time (min)", **styles)
+        # /self.plot_graph.addLegend()
+        # /self.plot_graph.showGrid(x=True, y=True)
+        # self.plot_graph.setYRange(20, 40)
         self.time = list(range(10))
         self.temperature = [randint(20, 40) for _ in range(10)]
         # Get a line reference
