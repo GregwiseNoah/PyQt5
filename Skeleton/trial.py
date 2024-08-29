@@ -1,13 +1,18 @@
-#import pyqtgraph as pg
+import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGridLayout
 from PyQt5.QtCore import Qt
 import sys
+import numpy as np
 
 #temp
 from PyQt5.QtGui import QPalette, QColor
 
 
+WIDTH = 1080
+HEIGHT= 720
+
+##########################################################
 #temp code
 class Color(QWidget):
 
@@ -19,6 +24,10 @@ class Color(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
+x = np.linspace(0, 3.14, 100)
+y = np.sin(x)
+##########################################################
+
 class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -28,8 +37,9 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
         tab = QTabWidget(self)
-        self.base(tab)
+        self.iq(tab)
         self.fft(tab)
+        self.para(tab)
         # widget = QWidget()
         # widget.setLayout(layout)
         # self.setCentralWidget(widget)
@@ -37,18 +47,20 @@ class MainWindow(QWidget):
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
 
-    def base(self, tab):
+    def iq(self, tab):
         #base visualizations
-        base = QWidget(self)
+        iq = QWidget(self)
         layout = QGridLayout()
-        base.setLayout(layout) 
+        iq.setLayout(layout) 
 
-        layout.addWidget(Color('red'), 0, 0)
+        #fwd_i = pg.PlotWidget().plot(x,y)
+
+        layout.addWidget(self.fft(x,y), 0, 0)
         layout.addWidget(Color('green'), 1, 0)
         layout.addWidget(Color('blue'), 1, 1)
-        layout.addWidget(Color('blue'), 2, 1)
-        layout.addWidget(Color('purple'), 3, 1)
-        tab.addTab(base, "Base")
+        # layout.addWidget(Color('blue'), 2, 1)
+        # layout.addWidget(Color('purple'), 3, 1)
+        tab.addTab(iq, "I/Q Stream")
 
     def fft(self, tab):
         #fft
@@ -59,10 +71,22 @@ class MainWindow(QWidget):
         layout.addWidget(Color('green'), 1, 0)
 
         
-        tab.addTab(fft, "FFT")
+        tab.addTab(fft, "Spectrum")
+    
+    def para(self, tab):
+        para = QWidget(self)
+        layout = QGridLayout()
+        para.setLayout(layout)
+        layout.addWidget(Color("blue"), 0, 0)
+        layout.addWidget(Color("pink"), 0, 1)
 
+        tab.addTab(para, "Parameters")
 
-    # self.fwd_i = pg.PlotWidget()
+    def fwd(self, x, y):
+        fwd_i = pg.PlotWidget()
+        return fwd_i.plot(x,y)
+    
+    #self.fwd_i_plot = fwd_i.plot(x, y)
     # self.fwd_q = pg.PlotWidget()
     
     # self.trans_i = pg.PlotWidget()
@@ -77,10 +101,20 @@ class MainWindow(QWidget):
     # self.fft_trans = pg.PlotWidget()
     # self.fft_fwd = pg.PlotWidget()
 
+# class stream(QWidget):
+
+#     def __init__(self):
+#         super(, self).__init__()
+
+#     def fwd_i(self):
+#         self.fwd_i = pg.PlotWidget()
+        
+
 
 def window():
     app = QApplication(sys.argv)
     win = MainWindow()
+    win.resize(WIDTH, HEIGHT)
     win.show()
     sys.exit(app.exec())
 

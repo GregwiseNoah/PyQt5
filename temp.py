@@ -1,61 +1,63 @@
+from pyqtgraph.Qt import QtGui, QtCore, QtWidgets
+import temp_gui as gui
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget,  QFormLayout, QGridLayout, QTabWidget, QLineEdit, QDateEdit, QPushButton
-from PyQt5.QtCore import Qt
+import pyqtgraph as pg
+import collections
+import random
+import time
+import math
+import numpy as np
+
+class DynamicPlotter:
+
+    def __init__(self, plot, sampleinterval=0.1, timewindow=10., size=(600, 350)):
+        # Data stuff
+        self.interval = int(sampleinterval * 1000)
+        self.bufsize = int(timewindow / sampleinterval)
+        self.databuffer = collections.deque([0.0] * self.bufsize, self.bufsize)
+        self.x = np.linspace(-timewindow, 0.0, self.bufsize)
+        self.y = np.zeros(self.bufsize, dtype=float)
+        
+        # PyQtGraph stuff
+        self.plt = plot
+        self.plt.setTitle('EEG/ECG Live Plot')
+        self.plt.resize(*size)
+        self.plt.showGrid(x=True, y=True)
+        #self.plt.setXRange(5,20, padding=0)
+        self.plt.setLabel('left', 'Amplitude', 'uVrms')
+        self.plt.setLabel('bottom', 'Time', 's')
+        self.curve = self.plt.plot(self.x, self.y, pen=(255, 0, 0))
+
+        # QTimer
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.updateplot)
+        self.timer.start(self.interval)
+
+    def getdata(self):
+        frequency = 0.5
+        noise = random.normalvariate(0., 1.)
+        new = 10. * math.sin(time.time() * frequency * 2 * math.pi) + noise
+        return new
+
+    def updateplot(self):
+        self.databuffer.append(self.getdata())
+        self.y[:] = self.databuffer
+        self.curve.setData(self.x, self.y)
 
 
+class MainWindow(QtWidgets.QMainWindow, gui.Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent=parent)
+        self.setupUi(self)
+        self.plots = []
+        for plot in (self.ch1PlotWidget, self.ch2PlotWidget, self.ch3PlotWidget):
+            self.plots.append(
+                DynamicPlotter(plot, sampleinterval=0.05, timewindow=5.)
+                )
 
 
-
-class MainWindow(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.setWindowTitle('PyQt QTabWidget')
-
-        main_layout = QGridLayout(self)
-        self.setLayout(main_layout)
-
-        # create a tab widget
-        tab = QTabWidget(self)
-
-        self.personal(tab)
-        self.contact(tab)
-
-
-        # add pane to the tab widget
-
-        main_layout.addWidget(tab, 0, 0, 2, 1)
-        main_layout.addWidget(QPushButton('Save'), 2, 0,
-                              alignment=Qt.AlignmentFlag.AlignLeft)
-        main_layout.addWidget(QPushButton('Cancel'), 2, 0,
-                              alignment=Qt.AlignmentFlag.AlignRight)
-
-        self.show()
-
-    def personal(self, tab):
-                # personal page
-        personal_page = QWidget(self)
-        layout = QFormLayout()
-        personal_page.setLayout(layout)
-        layout.addRow('First Name:', QLineEdit(self))
-        layout.addRow('Last Name:', QLineEdit(self))
-        layout.addRow('DOB:', QDateEdit(self))
-
-        tab.addTab(personal_page, 'Personal Info')
-    
-    def contact(self, tab):
-                # contact pane
-        contact_page = QWidget(self)
-        layout = QFormLayout()
-        contact_page.setLayout(layout)
-        layout.addRow('Phone Number:', QLineEdit(self))
-        layout.addRow('Email Address:', QLineEdit(self))
-        tab.addTab(contact_page, 'Contact Info')
-
-
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    sys.exit(app.exec())
+if __name__ == "__main__":
+    app = QtGui.QGuiApplication(sys.argv)
+    w = MainWindow()
+    w.show()
+    sys.exit(app.exec_())
