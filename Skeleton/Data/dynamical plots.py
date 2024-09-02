@@ -1,6 +1,7 @@
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
+from scipy import signal
 
 
 
@@ -14,7 +15,7 @@ class MainWindow(QtWidgets.QMainWindow):
         pen = pg.mkPen(color=(255, 0, 0))
         self.plot_graph.setTitle("Live Plot of Forward transmitted signal (q)", color="b", size="20pt")
         styles = {"color": "red", "font-size": "18px"}
-        self.plot_graph.setLabel("left", "Data", **styles)
+        self.plot_graph.setLabel("left", "Amplitude", **styles)
         self.plot_graph.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph.addLegend()
         self.plot_graph.showGrid(x=True, y=True)
@@ -36,10 +37,10 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         # Add a timer to simulate new temperature measurements
         self.i = 79
-        self.timer = QtCore.QTimer()
-        self.timer.setInterval(300)
-        self.timer.timeout.connect(self.update_plot)
-        self.timer.start()
+        # self.timer = QtCore.QTimer()
+        # self.timer.setInterval(300)
+        # self.timer.timeout.connect(self.update_plot)
+        # self.timer.start()
         
 
     def update_plot(self):

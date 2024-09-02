@@ -47,14 +47,14 @@ class MainWindow(QWidget):
         pen = pg.mkPen(color=(255, 0, 0))
         self.plot_graph.setTitle("Live Plot of Forward transmitted signal (q)", color="b", size="20pt")
         styles = {"color": "red", "font-size": "18px"}
-        self.plot_graph.setLabel("left", "Data", **styles)
+        self.plot_graph.setLabel("left", "Amplitude", **styles)
         self.plot_graph.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph.addLegend()
         self.plot_graph.showGrid(x=True, y=True)
         #self.plot_graph.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
-        self.fwd_qs = np.load("D:\Pyqt5\Skeleton\Data\q_19.npy")
+        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\q_19.npy")
         self.fwd_q = self.fwd_qs[68:78].tolist()#list(self.fwd_qs[0:10])
 
         # Get a line reference
@@ -70,7 +70,7 @@ class MainWindow(QWidget):
         # Add a timer to simulate new temperature measurements
         self.i = 79
         self.timer = QtCore.QTimer()
-        self.timer.setInterval(300)
+        self.timer.setInterval(200)
         self.timer.timeout.connect(self.update_plot)
         self.timer.start()      
 ###################################################
@@ -91,16 +91,13 @@ class MainWindow(QWidget):
         iq.setLayout(layout) 
 
         fwd_i = pg.PlotWidget()
-        #fwd_i.setBackground("w")
         fwd_i.plot(x,y, pen = 'k')
         
         fwd_q = pg.PlotWidget()
-        fwd_q.setBackground("w")
-        fwd_q.plot(x,np.cos(x))
+        fwd_q.plot(x,np.cos(x), pen = 'k')
         
         fwd_x = pg.PlotWidget()
-        fwd_x.setBackground("w")
-        fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)])
+        fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)] , pen = 'k')
         
         layout.addWidget(plot_graph, 0, 0)
         layout.addWidget(fwd_i, 0, 1)
@@ -176,3 +173,15 @@ def window():
     sys.exit(app.exec())
 
 window()
+
+
+
+
+''''
+Actual fps calculation
+0.0007 ms is the data I'm plotting right now.
+This itself corresponds to 1428 fps to plot all the data in real time (1s)
+With a delay of 150 ms or at 6fps, the time i will need to plot 16,384 points
+                                                                is 2457 seconds
+Wouldn't the data have to be extremely downsampled to be readable in real time?
+'''
