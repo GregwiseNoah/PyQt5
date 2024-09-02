@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGri
 from PyQt5.QtCore import Qt
 import sys
 import numpy as np
+import scipy
 
 
 pg.setConfigOption('background', 'w')
@@ -44,27 +45,45 @@ class MainWindow(QWidget):
 ###################################################
         self.plot_graph_fq = pg.PlotWidget()
         self.plot_graph_fi = pg.PlotWidget()
+        self.plot_graph_fr = pg.PlotWidget()
+
 
         pen = pg.mkPen(color=(255, 0, 0))
         self.plot_graph_fq.setTitle("Forward transmitted signal (q)", color="b", size="20pt")
         self.plot_graph_fi.setTitle("Forward transmitted signal (i)", color="b", size="20pt")
+        self.plot_graph_fr.setTitle("fft of forward transmitted signal", color="b", size="20pt")
+       
         styles = {"color": "red", "font-size": "18px"}
+       
         self.plot_graph_fq.setLabel("left", "Amplitude", **styles)
         self.plot_graph_fq.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph_fq.addLegend()
         self.plot_graph_fq.showGrid(x=True, y=True)
+       
         self.plot_graph_fi.setLabel("left", "Amplitude", **styles)
         self.plot_graph_fi.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph_fi.addLegend()
         self.plot_graph_fi.showGrid(x=True, y=True)
+
+        self.plot_graph_fi.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_fi.setLabel("bottom", "Frequency", **styles)
+        self.plot_graph_fi.addLegend()
+        self.plot_graph_fi.showGrid(x=True, y=True)
+
         #self.plot_graph_fq.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
+
         self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\q_19.npy")
         self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\i_19.npy")
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
-
+        
+        self.fwd_rs = self.fwd_qs*np.cos(2*np.pi*self.times) + self.fwd_is*np.sin(2*np.pi*self.times)
+        self.fwd_r = self.fwd_rs[68:78]
+        self.fwd_r_fft = np.fft.fft(self.fwd_r)
+        self.ffttimes = self.times[68:78].copy()
+        self.frequencies = scipy.fft.fftfreq(np.size(self.ffttimes), 1/2.34e7)
 
         self.line_q = self.plot_graph_fq.plot(
             self.time,
@@ -84,6 +103,18 @@ class MainWindow(QWidget):
             symbolSize=15,
             symbolBrush="b",
         )
+
+        self.line_r = self.plot_graph_fr.plot(
+            self.frequencies,
+            abs(self.fwd_r_fft),
+            #name="forward transmitted i",
+            pen=pen,
+            symbol="+",
+            symbolSize=15,
+            symbolBrush="b",
+        )
+
+
         # Add a timer to simulate new temperature measurements
         self.i = 79
         self.timer = QtCore.QTimer()
@@ -93,7 +124,7 @@ class MainWindow(QWidget):
 ###################################################
         tab = QTabWidget(self)
         self.iq(tab, self.plot_graph_fq, self.plot_graph_fi)
-        self.fft(tab)
+        self.fft(tab, self.plot_graph_fr)
         self.para(tab)
         # widget = QWidget()
         # widget.setLayout(layout)
@@ -123,12 +154,12 @@ class MainWindow(QWidget):
         # layout.addWidget(Color('purple'), 3, 1)
         tab.addTab(iq, "I/Q Stream")
 
-    def fft(self, tab):
+    def fft(self, tab, plot_graph_fr):
         #fft
         fft = QWidget(self)
         layout = QGridLayout()
         fft.setLayout(layout)
-        layout.addWidget(Color('red'), 0, 0)
+        layout.addWidget(plot_graph_fr, 0, 0)
         layout.addWidget(Color('green'), 1, 0)
 
         
@@ -155,6 +186,12 @@ class MainWindow(QWidget):
         self.line_i.setData(self.time, self.fwd_i)
         self.plot_graph_fi.setYRange(-100+min(self.fwd_i), 100+max(self.fwd_i) )
         #print(self.i, self.fwd_qs[self.i])
+        np.append(self.ffttimes, self.times[self.i])
+        np.append(self.fwd_r, self.fwd_rs[self.i])
+        self.fwd_r_fft = np.fft.fft(self.fwd_r)
+        self.frequencies = scipy.fft.fftfreq(np.size(self.ffttimes), 1/2.34e7)
+        self.line_r.setData(self.frequencies, abs(self.fwd_r_fft))
+
         self.i+=1  
 ###################################################                
     # def fwd(self, x, y):
