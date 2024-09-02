@@ -69,7 +69,7 @@ class MainWindow(QWidget):
         self.line_q = self.plot_graph_fq.plot(
             self.time,
             self.fwd_q,
-            name="forward transmitted q",
+            #name="forward transmitted q",
             pen=pen,
             symbol="+",
             symbolSize=15,
@@ -78,7 +78,7 @@ class MainWindow(QWidget):
         self.line_i = self.plot_graph_fi.plot(
             self.time,
             self.fwd_i,
-            name="forward transmitted i",
+            #name="forward transmitted i",
             pen=pen,
             symbol="+",
             symbolSize=15,

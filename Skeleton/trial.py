@@ -42,26 +42,43 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
 
 ###################################################
-        self.plot_graph = pg.PlotWidget()
-        self.plot_graph.setBackground("w")
+        self.plot_graph_fq = pg.PlotWidget()
+        self.plot_graph_fi = pg.PlotWidget()
+
         pen = pg.mkPen(color=(255, 0, 0))
-        self.plot_graph.setTitle("Live Plot of Forward transmitted signal (q)", color="b", size="20pt")
+        self.plot_graph_fq.setTitle("Forward transmitted signal (q)", color="b", size="20pt")
+        self.plot_graph_fi.setTitle("Forward transmitted signal (i)", color="b", size="20pt")
         styles = {"color": "red", "font-size": "18px"}
-        self.plot_graph.setLabel("left", "Amplitude", **styles)
-        self.plot_graph.setLabel("bottom", "Time (s)", **styles)
-        self.plot_graph.addLegend()
-        self.plot_graph.showGrid(x=True, y=True)
-        #self.plot_graph.setYRange(-2100, 2100)
+        self.plot_graph_fq.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_fq.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fq.addLegend()
+        self.plot_graph_fq.showGrid(x=True, y=True)
+        self.plot_graph_fi.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_fi.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fi.addLegend()
+        self.plot_graph_fi.showGrid(x=True, y=True)
+        #self.plot_graph_fq.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
         self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\q_19.npy")
-        self.fwd_q = self.fwd_qs[68:78].tolist()#list(self.fwd_qs[0:10])
+        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\i_19.npy")
+        self.fwd_q = self.fwd_qs[68:78].tolist()
+        self.fwd_i = self.fwd_is[68:78].tolist()
 
-        # Get a line reference
-        self.line = self.plot_graph.plot(
+
+        self.line_q = self.plot_graph_fq.plot(
             self.time,
             self.fwd_q,
-            name="forward transmitted q",
+            #name="forward transmitted q",
+            pen=pen,
+            symbol="+",
+            symbolSize=15,
+            symbolBrush="b",
+        )
+        self.line_i = self.plot_graph_fi.plot(
+            self.time,
+            self.fwd_i,
+            #name="forward transmitted i",
             pen=pen,
             symbol="+",
             symbolSize=15,
@@ -75,7 +92,7 @@ class MainWindow(QWidget):
         self.timer.start()      
 ###################################################
         tab = QTabWidget(self)
-        self.iq(tab, self.plot_graph)
+        self.iq(tab, self.plot_graph_fq, self.plot_graph_fi)
         self.fft(tab)
         self.para(tab)
         # widget = QWidget()
@@ -84,14 +101,14 @@ class MainWindow(QWidget):
 
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
-    def iq(self, tab, plot_graph):
+    def iq(self, tab, plot_graph_fq, plot_graph_fi):
         #iq visualizations
         iq = QWidget(self)
         layout = QGridLayout()
         iq.setLayout(layout) 
 
-        fwd_i = pg.PlotWidget()
-        fwd_i.plot(x,y, pen = 'k')
+        # fwd_i = pg.PlotWidget()
+        # fwd_i.plot(x,y, pen = 'k')
         
         fwd_q = pg.PlotWidget()
         fwd_q.plot(x,np.cos(x), pen = 'k')
@@ -99,8 +116,8 @@ class MainWindow(QWidget):
         fwd_x = pg.PlotWidget()
         fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)] , pen = 'k')
         
-        layout.addWidget(plot_graph, 0, 0)
-        layout.addWidget(fwd_i, 0, 1)
+        layout.addWidget(plot_graph_fq, 0, 0)
+        layout.addWidget(plot_graph_fi, 0, 1)
         layout.addWidget(fwd_q, 1, 0)
         layout.addWidget(fwd_x, 1, 1)
         # layout.addWidget(Color('purple'), 3, 1)
@@ -131,8 +148,12 @@ class MainWindow(QWidget):
         self.time.append(self.times[self.i])
         self.fwd_q = self.fwd_q[1:]
         self.fwd_q.append(self.fwd_qs[self.i])
-        self.line.setData(self.time, self.fwd_q)
-        self.plot_graph.setYRange(-100+min(self.fwd_q), 100+max(self.fwd_q) )
+        self.line_q.setData(self.time, self.fwd_q)
+        self.plot_graph_fq.setYRange(-100+min(self.fwd_q), 100+max(self.fwd_q) )
+        self.fwd_i = self.fwd_i[1:]
+        self.fwd_i.append(self.fwd_is[self.i])
+        self.line_i.setData(self.time, self.fwd_i)
+        self.plot_graph_fi.setYRange(-100+min(self.fwd_i), 100+max(self.fwd_i) )
         #print(self.i, self.fwd_qs[self.i])
         self.i+=1  
 ###################################################                
