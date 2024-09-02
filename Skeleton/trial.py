@@ -5,9 +5,13 @@ from PyQt5.QtCore import Qt
 import sys
 import numpy as np
 
-#temp
+
+pg.setConfigOption('background', 'w')
+pg.setConfigOption('foreground', 'k')
+##################################################
 from PyQt5.QtGui import QPalette, QColor
 from random import randint
+##################################################
 
 
 WIDTH = 1080
@@ -39,24 +43,36 @@ class MainWindow(QWidget):
 
 ###################################################
         self.plot_graph = pg.PlotWidget()
-        #self.setCentralWidget(self.plot_graph)
+        self.plot_graph.setBackground("w")
         pen = pg.mkPen(color=(255, 0, 0))
-        self.time = list(range(10))
-        self.temperature = [randint(20, 40) for _ in range(10)]
+        self.plot_graph.setTitle("Live Plot of Forward transmitted signal (q)", color="b", size="20pt")
+        styles = {"color": "red", "font-size": "18px"}
+        self.plot_graph.setLabel("left", "Data", **styles)
+        self.plot_graph.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph.addLegend()
+        self.plot_graph.showGrid(x=True, y=True)
+        #self.plot_graph.setYRange(-2100, 2100)
+        self.times = np.linspace(0.0019, 0.0026, 16384)
+        self.time = list(self.times[68:78])
+        self.fwd_qs = np.load("D:\Pyqt5\Skeleton\Data\q_19.npy")
+        self.fwd_q = self.fwd_qs[68:78].tolist()#list(self.fwd_qs[0:10])
+
         # Get a line reference
-        self.line1 = self.plot_graph.plot(
+        self.line = self.plot_graph.plot(
             self.time,
-            self.temperature,
-            name="Temperature Sensor",
+            self.fwd_q,
+            name="forward transmitted q",
             pen=pen,
             symbol="+",
             symbolSize=15,
             symbolBrush="b",
         )
+        # Add a timer to simulate new temperature measurements
+        self.i = 79
         self.timer = QtCore.QTimer()
         self.timer.setInterval(300)
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start()        
+        self.timer.start()      
 ###################################################
         tab = QTabWidget(self)
         self.iq(tab, self.plot_graph)
@@ -75,12 +91,15 @@ class MainWindow(QWidget):
         iq.setLayout(layout) 
 
         fwd_i = pg.PlotWidget()
-        fwd_i.plot(x,y)
+        #fwd_i.setBackground("w")
+        fwd_i.plot(x,y, pen = 'k')
         
         fwd_q = pg.PlotWidget()
+        fwd_q.setBackground("w")
         fwd_q.plot(x,np.cos(x))
         
         fwd_x = pg.PlotWidget()
+        fwd_x.setBackground("w")
         fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)])
         
         layout.addWidget(plot_graph, 0, 0)
@@ -112,10 +131,13 @@ class MainWindow(QWidget):
 ###################################################
     def update_plot(self):
         self.time = self.time[1:]
-        self.time.append(self.time[-1] + 1)
-        self.temperature = self.temperature[1:]
-        self.temperature.append(randint(20, 40))
-        self.line1.setData(self.time, self.temperature)    
+        self.time.append(self.times[self.i])
+        self.fwd_q = self.fwd_q[1:]
+        self.fwd_q.append(self.fwd_qs[self.i])
+        self.line.setData(self.time, self.fwd_q)
+        self.plot_graph.setYRange(-100+min(self.fwd_q), 100+max(self.fwd_q) )
+        #print(self.i, self.fwd_qs[self.i])
+        self.i+=1  
 ###################################################                
     # def fwd(self, x, y):
     #     fwd_i = pg.PlotWidget()
