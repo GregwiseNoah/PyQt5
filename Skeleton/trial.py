@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGridLayout
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGridLayout, QPushButton
 from PyQt5.QtCore import Qt
 import sys
 import numpy as np
@@ -44,10 +44,15 @@ class MainWindow(QWidget):
 ###################################################
         self.plot_graph_fq = pg.PlotWidget()
         self.plot_graph_fi = pg.PlotWidget()
+        self.plot_graph_tq = pg.PlotWidget()
+        self.plot_graph_ti = pg.PlotWidget()
 
         pen = pg.mkPen(color=(255, 0, 0))
-        self.plot_graph_fq.setTitle("Forward transmitted signal (q)", color="b", size="20pt")
-        self.plot_graph_fi.setTitle("Forward transmitted signal (i)", color="b", size="20pt")
+        self.plot_graph_fq.setTitle("Forward signal (q)", color="b", size="20pt")
+        self.plot_graph_fi.setTitle("Forward signal (i)", color="b", size="20pt")
+        self.plot_graph_tq.setTitle("Transmitted signal (q)", color="b", size="20pt")
+        self.plot_graph_ti.setTitle("Transmitted signal (i)", color="b", size="20pt")
+        
         styles = {"color": "red", "font-size": "18px"}
         self.plot_graph_fq.setLabel("left", "Amplitude", **styles)
         self.plot_graph_fq.setLabel("bottom", "Time (s)", **styles)
@@ -57,16 +62,29 @@ class MainWindow(QWidget):
         self.plot_graph_fi.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph_fi.addLegend()
         self.plot_graph_fi.showGrid(x=True, y=True)
+        self.plot_graph_tq.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_tq.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_tq.addLegend()
+        self.plot_graph_tq.showGrid(x=True, y=True)
+        self.plot_graph_ti.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_ti.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_ti.addLegend()
+        self.plot_graph_ti.showGrid(x=True, y=True)
         #self.plot_graph_fq.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
-        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\q_19.npy")
-        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\i_19.npy")
+        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
+        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
+        self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
+        self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
+        self.trans_q = self.trans_qs[68:78].tolist()
+        self.trans_i = self.trans_is[68:78].tolist()
 
 
-        self.line_q = self.plot_graph_fq.plot(
+        self.line_fq = self.plot_graph_fq.plot(
             self.time,
             self.fwd_q,
             #name="forward transmitted q",
@@ -75,7 +93,10 @@ class MainWindow(QWidget):
             symbolSize=15,
             symbolBrush="b",
         )
-        self.line_i = self.plot_graph_fi.plot(
+
+        #Just have to change i to q to combine the two plots, will do
+        #later with better pens and separate code for clarity
+        self.line_fi = self.plot_graph_fi.plot(
             self.time,
             self.fwd_i,
             #name="forward transmitted i",
@@ -84,15 +105,38 @@ class MainWindow(QWidget):
             symbolSize=15,
             symbolBrush="b",
         )
+
+        self.line_ti = self.plot_graph_ti.plot(
+            self.time,
+            self.trans_i,
+            #name="forward transmitted i",
+            pen=pen,
+            symbol="+",
+            symbolSize=15,
+            symbolBrush="b",
+        )
+        self.line_tq = self.plot_graph_tq.plot(
+            self.time,
+            self.trans_q,
+            #name="forward transmitted i",
+            pen=pen,
+            symbol="+",
+            symbolSize=15,
+            symbolBrush="b",
+        )
         # Add a timer to simulate new temperature measurements
+
+        
+
         self.i = 79
         self.timer = QtCore.QTimer()
         self.timer.setInterval(200)
         self.timer.timeout.connect(self.update_plot)
         self.timer.start()      
+
 ###################################################
         tab = QTabWidget(self)
-        self.iq(tab, self.plot_graph_fq, self.plot_graph_fi)
+        self.iq(tab, self.plot_graph_fq, self.plot_graph_fi , self.plot_graph_ti, self.plot_graph_tq)
         self.fft(tab)
         self.para(tab)
         # widget = QWidget()
@@ -101,7 +145,9 @@ class MainWindow(QWidget):
 
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
-    def iq(self, tab, plot_graph_fq, plot_graph_fi):
+    def iq(self, tab, plot_graph_fq, plot_graph_fi, plot_graph_ti, plot_graph_tq):
+
+
         #iq visualizations
         iq = QWidget(self)
         layout = QGridLayout()
@@ -119,11 +165,34 @@ class MainWindow(QWidget):
         fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)])
         
         layout.addWidget(plot_graph_fq, 0, 0)
-        layout.addWidget(plot_graph_fi, 0, 1)
-        layout.addWidget(fwd_q, 1, 0)
-        layout.addWidget(fwd_x, 1, 1)
+        layout.addWidget(plot_graph_fi, 0, 2)
+        layout.addWidget(plot_graph_ti, 1, 0)
+        layout.addWidget(plot_graph_tq, 1, 2)
         # layout.addWidget(Color('purple'), 3, 1)
         tab.addTab(iq, "I/Q Stream")
+
+        #pause button
+        self.button = QPushButton("Pause", self)
+        layout.addWidget(self. button, 2, 1)
+        self.button.setCheckable(True)
+        #self.button.clicked.connect(self.toggle_pause)
+        self.paused = True
+
+
+    #The problem with this approach is that it doesn't make sense to just pause the plotting logic, but to freeze the plot and let the plotting
+    #go on in the background so that the user always gets a live view of the plot.
+    def toggle_pause(self):
+        if self.button.isChecked():
+            self.button.setText("Resume")
+
+        else: 
+            self.plot_graph_fq.setYRange(-100+min(self.fwd_q), 100+max(self.fwd_q) )
+            self.plot_graph_fi.setYRange(-100+min(self.fwd_i), 100+max(self.fwd_i) )
+            self.line_fq.setData(self.time, self.fwd_q)
+            self.line_fi.setData(self.time, self.fwd_i)
+            self.line_ti.setData(self.time, self.trans_i)
+            self.line_tq.setData(self.time, self.trans_q)
+            self.button.setText("Pause")
 
     def fft(self, tab):
         #fft
@@ -150,14 +219,23 @@ class MainWindow(QWidget):
         self.time.append(self.times[self.i])
         self.fwd_q = self.fwd_q[1:]
         self.fwd_q.append(self.fwd_qs[self.i])
-        self.line_q.setData(self.time, self.fwd_q)
-        self.plot_graph_fq.setYRange(-100+min(self.fwd_q), 100+max(self.fwd_q) )
+        
         self.fwd_i = self.fwd_i[1:]
         self.fwd_i.append(self.fwd_is[self.i])
-        self.line_i.setData(self.time, self.fwd_i)
-        self.plot_graph_fi.setYRange(-100+min(self.fwd_i), 100+max(self.fwd_i) )
+
+        self.trans_q = self.trans_q[1:]
+        self.trans_q.append(self.trans_qs[self.i])
+
+        self.trans_i = self.trans_i[1:]
+        self.trans_i.append(self.trans_is[self.i])
+        
+       
         #print(self.i, self.fwd_qs[self.i])
         self.i+=1  
+
+        self.toggle_pause()
+
+
 ###################################################                
     # def fwd(self, x, y):
     #     fwd_i = pg.PlotWidget()
