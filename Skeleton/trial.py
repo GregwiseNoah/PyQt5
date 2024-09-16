@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGridLayout, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGridLayout, QPushButton, QLabel
 from PyQt5.QtCore import Qt
 import sys
 import numpy as np
@@ -74,15 +74,15 @@ class MainWindow(QWidget):
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
         # #Windows
-        # self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
-        # self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
-        # self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
-        # self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
-        #Ubuntu
-        self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
-        self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
-        self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
-        self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
+        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
+        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
+        self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
+        self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+        # Ubuntu
+        # self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
+        # self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
+        # self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
+        # self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
 
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
@@ -132,7 +132,7 @@ class MainWindow(QWidget):
         )
         # Add a timer to simulate new temperature measurements
 
-        
+        self.Timer = QLabel()
 
         self.i = 79
         self.timer = QtCore.QTimer()
@@ -142,7 +142,7 @@ class MainWindow(QWidget):
 
 ###################################################
         tab = QTabWidget(self)
-        self.iq(tab, self.plot_graph_fq, self.plot_graph_fi , self.plot_graph_ti, self.plot_graph_tq)
+        self.iq(tab, self.plot_graph_fq, self.plot_graph_fi , self.plot_graph_ti, self.plot_graph_tq, self.Timer)
         self.fft(tab)
         self.para(tab)
         # widget = QWidget()
@@ -151,7 +151,7 @@ class MainWindow(QWidget):
 
         main_layout.addWidget(tab, 0, 0, 2, 1)
 
-    def iq(self, tab, plot_graph_fq, plot_graph_fi, plot_graph_ti, plot_graph_tq):
+    def iq(self, tab, plot_graph_fq, plot_graph_fi, plot_graph_ti, plot_graph_tq, Timer):
 
 
         #iq visualizations
@@ -172,14 +172,19 @@ class MainWindow(QWidget):
         
         layout.addWidget(plot_graph_fq, 0, 0)
         layout.addWidget(plot_graph_fi, 0, 2)
-        layout.addWidget(plot_graph_ti, 1, 0)
-        layout.addWidget(plot_graph_tq, 1, 2)
+        layout.addWidget(plot_graph_tq, 1, 0)
+        layout.addWidget(plot_graph_ti, 1, 2)
         # layout.addWidget(Color('purple'), 3, 1)
         tab.addTab(iq, "I/Q Stream")
 
+        #Time widget
+        
+        Timer.setText(f"Time = {self.times[self.i]:.5f}")
+        layout.addWidget(Timer, 2, 1)
+
         #pause button
         self.button = QPushButton("Pause", self)
-        layout.addWidget(self. button, 2, 1)
+        layout.addWidget(self.button, 3, 1)
         self.button.setCheckable(True)
         #self.button.clicked.connect(self.toggle_pause)
         self.paused = True
@@ -238,6 +243,7 @@ class MainWindow(QWidget):
        
         #print(self.i, self.fwd_qs[self.i])
         self.i+=1  
+        self.Timer.setText(f"Time = {self.times[self.i]:.7f}")
 
         self.toggle_pause()
 
