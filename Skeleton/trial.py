@@ -73,10 +73,16 @@ class MainWindow(QWidget):
         #self.plot_graph_fq.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
-        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
-        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
-        self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
-        self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+        # #Windows
+        # self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
+        # self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
+        # self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
+        # self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+        #Ubuntu
+        self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
+        self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
+        self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
+        self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
 
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
