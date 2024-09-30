@@ -11,11 +11,11 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSSAGE = "!DISCONNECT"
 
-server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) #cannot run udp sockets due to access permissions
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #DGRAM cannot run udp sockets due to access permissions
 server.bind(ADDR)
 
 def handle_client(conn, addr):
-    print(f"[NEW CONNECTOIN] {addr} connected.")
+    print(f"[NEW CONNECTION] {addr} connected.")
     connected = True
 
     while connected:
