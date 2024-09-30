@@ -11,7 +11,7 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSSAGE = "!DISCONNECT"
 #Steaming streaming data through IVP4
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server.bind(ADDR)
 
 def handle_client(conn, addr):
