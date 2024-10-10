@@ -3,8 +3,8 @@ serverIP = '127.0.0.1';  % Localhost (change to the actual IP address if needed)
 serverPort = 5050;      % Port to send data to
 
 % Create a UDP object
-udpSender = udpport("datagram", "IPV4");
-
+udpSender = udpport();
+%"datagram", "IPV4"
 % Load the .mat file
 loadedData = load('Fwd_I.mat'); 
 
