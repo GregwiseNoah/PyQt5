@@ -4,7 +4,7 @@ import threading
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 localhost = socket.gethostbyname(socket.gethostname())
-client.bind((localhost, 9998))
+client.bind((localhost, 5052))
 name = input("")
 
 def receive():
