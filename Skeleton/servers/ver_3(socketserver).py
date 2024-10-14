@@ -18,15 +18,11 @@ SERVER_PORT = 5050      # Port to listen on
 BUFFER_SIZE = 1024
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
-    """
-    This class handles incoming UDP requests. It processes the data received
-    from the client and can perform actions such as converting the data back
-    to its original format (e.g., numpy array).
-    """
+   
     def handle(self):
         # The data is available as self.request[0] and the client address as self.client_address
         data = self.request[0]  # Data received from the client
-        socket = self.request[1]  # The socket used to send responses (if needed)
+        socket = self.request[1]  
 
         #print(f"Received {len(data)} bytes from {self.client_address}")
 

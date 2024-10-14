@@ -16,19 +16,15 @@ iteration = 1
 SERVER_IP = '127.0.1.1'  # Localhost
 SERVER_PORT = 5050      # Port to listen on
 
-# Buffer size for receiving data (should match the size of the expected data)
+# Buffer size for receiving data 
 BUFFER_SIZE = 1024
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
-    """
-    This class handles incoming UDP requests. It processes the data received
-    from the client and can perform actions such as converting the data back
-    to its original format (e.g., numpy array).
-    """
+    
     def handle(self):
         # The data is available as self.request[0] and the client address as self.client_address
         data = self.request[0]  # Data received from the client
-        socket = self.request[1]  # The socket used to send responses (if needed)
+        socket = self.request[1]  
 
         #print(f"Received {len(data)} bytes from {self.client_address}")
 
@@ -41,12 +37,12 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         packet_queue.put(received_data)
 
 
-# Create a UDP server
+
 def udp_start():
     with socketserver.UDPServer((SERVER_IP, SERVER_PORT), MyUDPHandler) as server:
         print(f"UDP server is listening on {SERVER_IP}:{SERVER_PORT}...")
     
-        # Start the server. It will run forever until manually stopped.
+
         server.serve_forever()
 
 #Function to process data
