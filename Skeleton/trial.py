@@ -46,14 +46,23 @@ class MainWindow(QWidget):
         self.plot_graph_fi = pg.PlotWidget()
         self.plot_graph_tq = pg.PlotWidget()
         self.plot_graph_ti = pg.PlotWidget()
+        self.plot_graph_fft_fwd = pg.PlotWidget()
+        self.plot_graph_fft_trans = pg.PlotWidget()
 
         pen = pg.mkPen(color=(255, 0, 0))
+        
+        #Tab iq
         self.plot_graph_fq.setTitle("Forward signal (q)", color="b", size="20pt")
         self.plot_graph_fi.setTitle("Forward signal (i)", color="b", size="20pt")
         self.plot_graph_tq.setTitle("Transmitted signal (q)", color="b", size="20pt")
         self.plot_graph_ti.setTitle("Transmitted signal (i)", color="b", size="20pt")
+
+        #Tab fft
+        self.plot_graph_fft_fwd.setTitle("FFT of Forward signal", color="b", size="20pt")
+        self.plot_graph_fft_trans.setTitle("FFt of Transmitted signal", color="b", size="20pt")
         
         styles = {"color": "red", "font-size": "18px"}
+
         self.plot_graph_fq.setLabel("left", "Amplitude", **styles)
         self.plot_graph_fq.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph_fq.addLegend()
@@ -70,6 +79,16 @@ class MainWindow(QWidget):
         self.plot_graph_ti.setLabel("bottom", "Time (s)", **styles)
         self.plot_graph_ti.addLegend()
         self.plot_graph_ti.showGrid(x=True, y=True)
+
+        self.plot_graph_fft_fwd.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_fft_fwd.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fft_fwd.addLegend()
+        self.plot_graph_fft_fwd.showGrid(x=True, y=True)
+        self.plot_graph_fft_trans.setLabel("left", "Amplitude", **styles)
+        self.plot_graph_fft_trans.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fft_trans.addLegend()
+        self.plot_graph_fft_trans.showGrid(x=True, y=True)
+
         #self.plot_graph_fq.setYRange(-2100, 2100)
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
@@ -143,13 +162,16 @@ class MainWindow(QWidget):
 ###################################################
         tab = QTabWidget(self)
         self.iq(tab, self.plot_graph_fq, self.plot_graph_fi , self.plot_graph_ti, self.plot_graph_tq, self.Timer)
-        self.fft(tab)
+        self.fft(tab,self.plot_graph_fft_fwd, self.plot_graph_fft_trans)
         self.para(tab)
         # widget = QWidget()
         # widget.setLayout(layout)
         # self.setCentralWidget(widget)
 
         main_layout.addWidget(tab, 0, 0, 2, 1)
+
+
+
 
     def iq(self, tab, plot_graph_fq, plot_graph_fi, plot_graph_ti, plot_graph_tq, Timer):
 
@@ -158,17 +180,7 @@ class MainWindow(QWidget):
         iq = QWidget(self)
         layout = QGridLayout()
         iq.setLayout(layout) 
-
-        fwd_i = pg.PlotWidget()
-        #fwd_i.setBackground("w")
-        fwd_i.plot(x,y, pen = 'k')
         
-        fwd_q = pg.PlotWidget()
-        fwd_q.plot(x,np.cos(x), pen = 'k')
-        
-        fwd_x = pg.PlotWidget()
-        fwd_x.setBackground("w")
-        fwd_x.plot(x[:50],[randint(0,100) for _ in range(50)])
         
         layout.addWidget(plot_graph_fq, 0, 0)
         layout.addWidget(plot_graph_fi, 0, 2)
@@ -205,15 +217,15 @@ class MainWindow(QWidget):
             self.line_tq.setData(self.time, self.trans_q)
             self.button.setText("Pause")
 
-    def fft(self, tab):
-        #fft
+    def fft(self, tab, plot_graph_fft_fwd, plot_graph_fft_trans):
+
         fft = QWidget(self)
         layout = QGridLayout()
         fft.setLayout(layout)
-        layout.addWidget(Color('red'), 0, 0)
-        layout.addWidget(Color('green'), 1, 0)
 
-        
+        layout.addWidget(plot_graph_fft_fwd, 0, 0)
+        layout.addWidget(plot_graph_fft_trans, 1, 0)
+
         tab.addTab(fft, "Spectrum")
     
     def para(self, tab):

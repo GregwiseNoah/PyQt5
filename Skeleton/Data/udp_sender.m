@@ -4,7 +4,7 @@ serverPort = 5050;
 loadedData = load('Fwd_I.mat'); 
 
 
-udpSender = udpport();
+udpSender = udp;
 
 dataToSend = loadedData.Fwd_I.Data(3,:);
 

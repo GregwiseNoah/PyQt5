@@ -1,0 +1,8 @@
+fwd_r = fwd_q[:]*np.cos(2*np.pi*times) + fwd_i[:]*np.sin(2*np.pi*times)
+fwd_r_fft = scipy.fft.fft(fwd_r)
+freq_fwd = scipy.fft.fftfreq(np.size(times), 44.44e-6)
+
+
+trans_r = trans_q*np.cos(2*np.pi*times) + trans_i*np.sin(2*np.pi*times)
+trans_fft = scipy.fft.fft(trans_r)
+freq_trans = scipy.fft.fftfreq(np.size(times), 44.44e-6)
