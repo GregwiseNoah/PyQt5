@@ -5,7 +5,7 @@ import threading
 import time
 import os
 
-newpath = '/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/'
+newpath = '/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/data/'
 os.chdir(newpath)
 # Queue
 packet_queue = queue.Queue()
