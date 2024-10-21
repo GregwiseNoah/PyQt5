@@ -6,3 +6,13 @@ freq_fwd = scipy.fft.fftfreq(np.size(times), 44.44e-6)
 trans_r = trans_q*np.cos(2*np.pi*times) + trans_i*np.sin(2*np.pi*times)
 trans_fft = scipy.fft.fft(trans_r)
 freq_trans = scipy.fft.fftfreq(np.size(times), 44.44e-6)
+
+
+
+I need to create a file sniffer that will look for fwd_q and fwd_i files continuously and will add it to the fft calculations I guess this should be done in a thread
+If upsampling required, it will be done here
+
+
+
+I need to verify the number 44.44e-6 just to confirm it, I don't remember the calculation that went into that. '
+

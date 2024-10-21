@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QTabWidget, QWidget, QGri
 from PyQt5.QtCore import Qt
 import sys
 import numpy as np
+import scipy
+import threading
+
 
 
 pg.setConfigOption('background', 'w')
@@ -81,11 +84,11 @@ class MainWindow(QWidget):
         self.plot_graph_ti.showGrid(x=True, y=True)
 
         self.plot_graph_fft_fwd.setLabel("left", "Amplitude", **styles)
-        self.plot_graph_fft_fwd.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fft_fwd.setLabel("bottom", "Frequency", **styles)
         self.plot_graph_fft_fwd.addLegend()
         self.plot_graph_fft_fwd.showGrid(x=True, y=True)
         self.plot_graph_fft_trans.setLabel("left", "Amplitude", **styles)
-        self.plot_graph_fft_trans.setLabel("bottom", "Time (s)", **styles)
+        self.plot_graph_fft_trans.setLabel("bottom", "Frequency", **styles)
         self.plot_graph_fft_trans.addLegend()
         self.plot_graph_fft_trans.showGrid(x=True, y=True)
 
@@ -93,21 +96,44 @@ class MainWindow(QWidget):
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
         # #Windows
-        # self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
-        # self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
-        # self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
-        # self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
+        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
+        self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
+        self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
         # Ubuntu
-        self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
-        self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
-        self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
-        self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
+        # self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
+        # self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
+        # self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
+        # self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
 
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
         self.trans_q = self.trans_qs[68:78].tolist()
         self.trans_i = self.trans_is[68:78].tolist()
 
+        ###### needs code here for defining fft
+        self.fwd_r = self.fwd_qs*np.cos(2*np.pi*self.times + self.fwd_is*np.sin(2*np.pi*self.times))
+        self.fft_fwd = scipy.fft.fft(self.fwd_r)
+        self.freq_fwd = scipy.fft.fftfreq(np.size(self.fwd_r), 44.44e-6)
+
+        ######
+        print(self.freq_fwd, self.fft_fwd)
+        self.line_fft_fwd = self.plot_graph_fft_fwd.plot(
+            self.freq_fwd,
+            abs(self.fft_fwd),
+            #name="forward transmitted q",
+            pen=pen,
+            symbol="+",
+            symbolSize=15,
+            symbolBrush="black"
+        )
+
+        # One way to do this, add all the elements of q and i now and then increment fwd_r and trans_r every time with the update function.
+
+
+        '''
+        Note to self, since fft is the most useful metric, it should be calculated on a packet basis and not sequentially
+        '''
 
         self.line_fq = self.plot_graph_fq.plot(
             self.time,
