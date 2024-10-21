@@ -93,15 +93,15 @@ class MainWindow(QWidget):
         self.times = np.linspace(0.0019, 0.0026, 16384)
         self.time = list(self.times[68:78])
         # #Windows
-        self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
-        self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
-        self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
-        self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
+        # self.fwd_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_q_19.npy")
+        # self.fwd_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\fwd_i_19.npy")
+        # self.trans_qs = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_q_19.npy")
+        # self.trans_is = np.load("D:\\Pyqt5\\Skeleton\\Data\\trans_i_19.npy")
         # Ubuntu
-        # self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
-        # self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
-        # self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
-        # self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
+        self.fwd_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_q_19.npy")
+        self.fwd_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/fwd_i_19.npy")
+        self.trans_qs = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_q_19.npy")
+        self.trans_is = np.load("/home/george/Documents/HZB/Pyqt5/PyQt5/Skeleton/Data/trans_i_19.npy")
 
         self.fwd_q = self.fwd_qs[68:78].tolist()
         self.fwd_i = self.fwd_is[68:78].tolist()
@@ -116,11 +116,15 @@ class MainWindow(QWidget):
             pen=pen,
             symbol="+",
             symbolSize=15,
-            symbolBrush="b",
+            symbolBrush="b"
         )
 
         #Just have to change i to q to combine the two plots, will do
         #later with better pens and separate code for clarity
+
+        # It is now later and i don't know what i meant here.
+
+        # okay got it, it means I can draw two plots on one graph if i use the same name
         self.line_fi = self.plot_graph_fi.plot(
             self.time,
             self.fwd_i,
@@ -128,7 +132,7 @@ class MainWindow(QWidget):
             pen=pen,
             symbol="+",
             symbolSize=15,
-            symbolBrush="b",
+            symbolBrush="b"
         )
 
         self.line_ti = self.plot_graph_ti.plot(
@@ -138,7 +142,7 @@ class MainWindow(QWidget):
             pen=pen,
             symbol="+",
             symbolSize=15,
-            symbolBrush="b",
+            symbolBrush="b"
         )
         self.line_tq = self.plot_graph_tq.plot(
             self.time,
@@ -147,7 +151,7 @@ class MainWindow(QWidget):
             pen=pen,
             symbol="+",
             symbolSize=15,
-            symbolBrush="b",
+            symbolBrush="b"
         )
         # Add a timer to simulate new temperature measurements
 
