@@ -116,11 +116,30 @@ class MainWindow(QWidget):
         self.fft_fwd = scipy.fft.fft(self.fwd_r)
         self.freq_fwd = scipy.fft.fftfreq(np.size(self.times), 44.44e-6)
 
+        self.trans_r = self.trans_qs*np.cos(2*np.pi*self.times + self.trans_is*np.sin(2*np.pi*self.times))
+        self.fft_trans = scipy.fft.fft(self.trans_r)
+        self.freq_fwd = scipy.fft.fftfreq(np.size(self.times), 44.44e-6)
+
         ######
         #print(self.freq_fwd, self.fft_fwd)
+
+        #test plot with the inbuilt fft
+
+
+
         self.line_fft_fwd = self.plot_graph_fft_fwd.plot(
             self.freq_fwd,
-            abs(self.fft_fwd),
+            (abs(self.fft_fwd)),
+            #name="forward transmitted q",
+            pen=pg.mkPen('black', width = 2)#,
+            # symbol="+",
+            # symbolSize=15,
+            # symbolBrush="black"
+        ).setLogMode(False, True)
+
+        self.line_fft_trans= self.plot_graph_fft_trans.plot(
+            self.freq_fwd,
+            abs(self.fft_trans),
             #name="forward transmitted q",
             pen=pg.mkPen('black', width = 2)#,
             # symbol="+",
@@ -338,5 +357,5 @@ Actual fps calculation
 This itself corresponds to 1428 fps to plot all the data in real time (1s)
 With a delay of 150 ms or at 6fps, the time i will need to plot 16,384 points
                                                                 is 2457 seconds
-Wouldn't the data have to be extremely slowed down to be readable in real time?
+Wouldn't the data have to be extremely slowed downau to be readable in real time?
 '''
